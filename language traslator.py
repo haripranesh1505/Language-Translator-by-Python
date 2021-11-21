@@ -1,67 +1,100 @@
-# pip install googletrans==3.1.0a0
+from tkinter import *
+from tkinter import ttk,messagebox
+import googletrans
 from googletrans import Translator
 from gtts import gTTS
-from tkinter import *
+import os
 
-window = Tk()
-window.geometry('600x280')
-window.config(bg='black')
-set_bg = PhotoImage(file="iimage3.png")
+root=Tk()
+root.title("Language Translator")
+root.geometry("1080x980")
+root.resizable(False,False)
+root.configure(background="white")
 
-label_1 = Label(window,image=set_bg)
-label_1.place(x=0, y=-50)
-
-e1 = Entry(window, bg="white",fg="black",font=("Arial",25,"bold"))
-e1.place(x=20,y=20)
-
-def convert_language():
-    a1 = e1.get()
-    t1 = Translator()
-    t2 = click_option.get()
-
-    if t2 == "English":
-        convert = "en"
-    elif t2 == "Hindi":
-        convert = "hi"
-    elif t2 == "German":
-        convert = "de"
-    elif t2 == "French":
-        convert = "fr"
-    elif t2 == "Spanish":
-        convert = "es"
-    elif t2 == "Russian":
-        convert = "ru"
-
-    trans_text = t1.translate(a1, dest= convert)
-    trans_text = trans_text.text
-    ob1 = gTTS(text=trans_text, slow=False, lang=convert)
-    label_2.config(text=trans_text)
-
-choises = [
-    "English",
-    "Hindi",
-    "German",
-    "French",
-    "Spanish",
-    "Russian"
-]
-
-click_option = StringVar()
-click_option.set("Select Language")
-
-list_drop = OptionMenu(window, click_option, *choises)
-list_drop.configure(background="green", foreground="white", font=('Arial',15,"bold"))
-list_drop.place(x=400,y=20)
-
-label_2 = Label(window, text="\t\t\t\t\t\t", bg="black",fg="white",font=("Arial",40,"bold"))
-label_2.place(x=0,y=120)
-label_2 = Label(window, text="Translatd text",bg="black",fg="white",font=("Arial",40,"bold"))
-label_2.place(x=180,y=120)
-
-Button_1 = Button(window, text="Translate",bg="red",fg="white",font=("Arial",25,"bold"),command=convert_language)
-Button_1.place(x=220,y=200)
+def label_change():
+    c=combo1.get()
+    c1=combo2.get()
+    label1.configure(text=c)
+    label2.configure(text=c1)
+    root.after(1000,label_change)
+    language = c1
 
 
+def translate_now():
+
+    text_=text1.get(1.0,END)
+    t1=Translator()
+    trans_text=t1.translate(text_,src=combo1.get(),dest=combo2.get())
+    trans_text=trans_text.text
+    text2.delete(1.0,END)
+    text2.insert(END,trans_text)
+    trans_text=str(trans_text)
+    output = gTTS(text=trans_text, lang="hi", slow=False)
+    output.save("output.mp3")
+    os.system("start output.mp3")
+
+#icon
+image_icon=PhotoImage(file="Bennett.png")
+root.iconphoto(False,image_icon)
+
+#Arrow
+arrow_image=PhotoImage(file="arrow.png")
+image_label=Label(root,image=arrow_image,width=150)
+image_label.place(x=460,y=50)
+a=1
+language=googletrans.LANGUAGES
+languageV=list(language.values())
+lang1=language.keys()
+
+#first combobox
+combo1=ttk.Combobox(root,values=languageV,font="Roboto 14",state="r")
+combo1.place(x=110,y=20)
+combo1.set("ENGLISH")
+
+label1=Label(root,text="ENGLISH",font="segoe 30 bold",bg="white",width=18,bd=5,relief=GROOVE)
+label1.place(x=10,y=50)
+
+#second combobox
+combo2=ttk.Combobox(root,values=languageV,font="Roboto 14",state="r")
+combo2.place(x=730,y=20)
+combo2.set("SELECT LANGUAGE")
+
+label2=Label(root,text="ENGLISH",font="segoe 30 bold",bg="white",width=18,bd=5,relief=GROOVE)
+label2.place(x=620,y=50)
+
+#first frame
+f=Frame(root,bg="Black",bd=5)
+f.place(x=10,y=118,width=440,height=435)
+
+text1=Text(f,font="Roboto 20",bg="white",relief=GROOVE,wrap=WORD)
+text1.place(x=0,y=0,width=430,height=425)
+
+scrollbar1=Scrollbar(f)
+scrollbar1.pack(side="right",fill='y')
+
+scrollbar1.configure(command=text1.yview)
+text1.configure(yscrollcommand=scrollbar1.set)
+
+#second frame
+f1=Frame(root,bg="Black",bd=5)
+f1.place(x=620,y=118,width=440,height=435)
+
+text2=Text(f1,font="Roboto 20",bg="white",relief=GROOVE,wrap=WORD)
+text2.place(x=0,y=0,width=430,height=425)
+
+scrollbar2=Scrollbar(f1)
+scrollbar2.pack(side="right",fill='y')
+
+scrollbar2.configure(command=text2.yview)
+text2.configure(yscrollcommand=scrollbar2.set)
+
+#translate button
+translate=Button(root,text="Translate",font="Roboto,15",activebackground="white",cursor="hand2",
+                 bd=1,width=12,height=2,bg="black",fg="white",command=translate_now)
+translate.place(x=468,y=360)
 
 
-window.mainloop()
+
+label_change()
+
+root.mainloop()
